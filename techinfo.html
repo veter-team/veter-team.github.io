@@ -1,0 +1,260 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Veter - robot for researchers</title>
+<LINK href="styles.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<font face="arial">
+
+<center>
+<img src="images/vlogo2.png" width="20%"><br>
+<font face="arial" size="4" color="0e4d6c">
+<b>Veter - robotics vehicle for researchers and makers</b>
+</font>
+</center>
+
+<center>
+
+<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://veterobot.com" data-via="andreyrobo" data-related="andreyrobo" data-hashtags="robotics">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+<!-- Place this tag where you want the +1 button to render. -->
+<div class="g-plusone" data-size="medium" data-href="http://veterobot.com"></div>
+
+<!-- Place this tag after the last +1 button tag. -->
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script>
+<br/>
+<br/>
+
+<table class="menu">
+<tr>
+  <td><a href="index.html">HOME</a></td>
+  <td class="current">TECHNICAL INFO</td>
+  <td><a href="https://github.com/veter-team/veter/wiki/English-intro">BUILD YOURSELF</a></td>
+  <td><a href="https://github.com/veter-team/veter/wiki/English-intro">ORDER KIT</td>
+  <td><a href="https://github.com/veter-team/veter/wiki/English-intro">PARTICIPATE AND CONTRIBUTE</a></td>
+  <td><a href="http://veter-project.blogspot.com">BLOG</a></td>
+  <td><a href="aboutus.html">ABOUT US</a></td>
+</tr>
+</table>
+
+<br/>
+
+<iframe width="560" height="315" 
+	src="http://www.youtube.com/embed/bSEoQOExiMw" 
+	frameborder="0" allowfullscreen>
+</iframe>
+
+</center>
+
+<br/><br/>
+
+<div id="content" style="width: 69%; float:left">
+
+<font face="arial" size="4" color="0e4d6c">
+<p>
+<b>Target audience</b>
+</p>
+</font>
+
+At the first step we are targeting researches in robotics, artificial
+intelligence and computervision as well as hobby robotics
+enthusiasts. For this purposes, we identified and addressed the
+following key requirements:
+
+<ul>
+<li> should be complete open (hardware and software)</li>
+<li> equipped with typical and widely used set of sensors</li>
+<li> easy customizable to integrate new or different types of sensros
+and actuators</li>
+<li> energy efficient yet powerful on-board computer</li>
+<li> provide bi-directional communication link to transmit sensor and
+control data in real-time</li>
+<li> set of software modules which support distributed data processing
+and provide hardware abstraction layer. It should let developers
+concentrate on experiments and applications of their core
+competences</li>
+<li> considerably lower cost comparing to the similar available products</li>
+</ul>
+
+To address these requirements we decide for the following solutions.
+
+<font face="arial" size="4" color="0e4d6c">
+<p>
+<b>Chassis and body</b>
+</p>
+</font>
+
+We are
+using <a href="http://www.pololu.com/file/0J467/Rover%205.pdf">Dagu
+Rover 5 Tracked Chassis</a> with two motors and two quadrature
+encoders. The whole body
+is <a href="http://en.wikipedia.org/wiki/3D_printing">3D-printed</a>
+and provides:
+<ul>
+<li> rotated "head" (to mount camera on it)</li>
+<li> folding mast for EMS-sensitive sensors (such as, for example, digital compass)</li>
+<li> place for exchangable batteries</li>
+<li> "doors" to access the inside electronic connectors</li>
+<li> extension options for additional electronic, sensors and actuators</li>
+</ul>
+
+Application of the 3D printing significantly simplifes customization
+of the body. In addition, it opens the natural way to integrate new
+types of sensors and actuators. All 3D models are developed using
+popular open-source modeling
+tool <a href="http://www.blender.org">Blender</a>. All the models
+required to print the body are also available as open-source. The
+following set of pictures provides some examples:
+<center>
+<a href="images/techinfo/real1.jpg"><img width="20%" src="images/techinfo/real1.jpg"/></a>
+<a href="images/techinfo/real2.jpg"><img width="20%" src="images/techinfo/real2.jpg"/></a>
+<a href="images/techinfo/rendered-alternative.jpg"><img width="27%" src="images/techinfo/rendered-alternative.jpg"/></a>
+<a href="images/techinfo/rendered-alternative2.jpg"><img width="27%" src="images/techinfo/rendered-alternative2.jpg"/></a>
+<br/>
+<font size="2"><i>
+The first two pictures shows our current model and the last two
+represent rendered 3D models of the alternative bodies we are
+currently working on.
+</i></font>
+</center>
+
+<font face="arial" size="4" color="0e4d6c">
+<p>
+<b>Sensors and on-board electronic</b>
+</p>
+</font>
+
+In the full configuration the following sensors are available:
+<ul>
+<li> four ultra-sound range finders (on the sides, front and back)</li>
+<li> two video cameras</li>
+<li> pan/tilt compensated digital compass</li>
+<li> GPS receiver</li>
+</ul>
+
+The front sonar and cameras could be mounted on the "head" which is
+rotated by the servo motor. All peripherial devices are connected to
+the on-board computer over USB and connectors provided by the daughter
+board. Current robot version uses
+TI's <a href="http://beagleboard.org">BeagleBoard-xM</a> as on-board
+computer. BeagleBoard is an open-hardware embedded computer with
+dual-core CPU (ARM+DSP). It provides enough power to compress video
+stream with H.264 codec in real-time, control the hardware and run
+advanced navigation algorithms. We are using standard in modelling
+domain NiMh batteries. For development, the robot could be powered
+with external power supply.
+
+<font face="arial" size="4" color="0e4d6c">
+<p>
+<b>Connectivity</b>
+</p>
+</font>
+
+Robot is equipped with the IEEE 802.11 b/g/n WLAN-Adapter. Currently,
+we are testing the operation mode with 3G-Modem (UMTS). It is already
+possible (there is an available software) to remotely control the
+robot over the Internet using real-time video streaming from on-board
+camera. Of course, the autonomous operation mode is also possible. In
+particular, we support cloud-robotics paradigm: complex navigation
+algorithms could be executed on external powerful computer if the
+on-board computer does not provide enough performance.
+
+<font face="arial" size="4" color="0e4d6c">
+<p>
+<b>Software</b>
+</p>
+</font>
+
+The whole software is open-source and
+is <a href="https://github.com/veter-team">available on
+git-hub</a>. We offer the complete stack from operating system up to
+communication infrastructure and client-side user interface and
+visualization applications.
+<ul>
+<li> we provide customized image based on
+popular <a href="http://www.angstrom-distribution.org/">Angstrom Linux
+distribution</a> which is optimized for the the BeagleBoard.</li>
+<li> we are using <a href="http://www.xenomai.org">Xenomai</a> Linux
+real-time extension for motor control and other time-sensitive
+tasks.</li>
+<li> sensors and actuators are remotely  accessible (over the network) using corresponding software components.</li>
+<li> for all remoting purposes we are
+using <a href="http://www.zeroc.com">ZeroC's Ice</a> (Internet
+Communication Engine) middleware.</li>
+<li> it allows developers to use wide range of programming languages
+(C++, Python, Ruby, Java and all .Net-languages) to develop own
+software components.</li>
+<li> Ice also supports different communication paradigms such as for
+example Publisher/Subscriber, RPC-stile remote invocations, etc. It
+provides great flexibility for developers when designing own software
+components.</li>
+</ul>
+
+Zur Steuerung des Fahrzeugs steht eine OpenGL-basierte Steuerkonsole
+bereit. Information von Sensoren (inklusive Video von Kameras) werden
+damit visualisiert und Steuerkommandos vom Anwender an das Fahrzeug
+übertragen. 
+
+There is an OpenGL-based application "cockpit" available to remotely
+control the robot manually. Sensor data (includeing video from
+cameras) are rendered in real-time and control commands are sent back
+to the vehicle. Keyboard and USB joysticks are supported as control
+devices. The following picture illustrate the current version of the
+cockpit application.
+<center>
+<a href="images/techinfo/cockpit.png"><img width="50%" src="images/techinfo/cockpit.png"></a>
+<br/>
+<font size="2"><i>
+The left video pannel shows the original video stream and the right
+one - processed with OpenCV (in this case using Canny edge
+detection). In the bottom, there are indicators for current motor
+speed, sonar measurements, compass, etc.
+</i></font>
+</center>
+<p>
+To demonstrate how to develop solutions for typical problems from
+robotics domain using our platform we
+implement <a href="https://github.com/andreynech/udacity-cs373">several
+homework assignments</a>
+from <a href="http://www.udacity.com/overview/Course/cs373/CourseRev/apr2012">"Programming
+A Robotic Car"</a> online course taught by Prof. Sebastian
+Thrun. These examples illustrates the applicability of our platform in
+educational domain. In particular, comparing to popular LEGO
+Mindstorms systems, our system offers more computational power and
+more flexible set of software building blocks to solve typical
+robotics problems. Cloud-robotics and distributed autonomous robotic
+systems are promising future directions. Our platform is the step
+towards this direction and our customers could benefit by reusing our
+software and hardware and concentrate on their areas of competence.
+</p>
+
+</div>
+
+</font>
+
+
+<!-- Second div to group G+, Twitter, etc. -->
+<div id="social" style="width: 29%; float: right">
+
+<!-- Google+ widget -->
+<div class="g-plus" data-height="131" data-href="https://plus.google.com/110309917255835035146"></div>
+
+<!-- Twitter timeline widget -->
+<a class="twitter-timeline" data-dnt=true href="https://twitter.com/veterobot" data-widget-id="289142164968050688">Tweets by @veterobot</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+</div>
+
+</body>
+</html>
