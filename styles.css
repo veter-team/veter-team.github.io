@@ -15,6 +15,7 @@ table.menu td {
   border-style: inset;
   border-color: light-gray;
   background-color: #0e4d6c;
+  padding: 7;
 }
 
 table.menu td a:link{
