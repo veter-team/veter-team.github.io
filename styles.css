@@ -8,6 +8,7 @@ table.menu {
   border-color: #0e4d6c;
   border-collapse: collapse;
   background-color: #0e4d6c);
+  width: 100%;
 }
 table.menu td {
   border-width: 1px;
@@ -16,6 +17,7 @@ table.menu td {
   border-color: light-gray;
   background-color: #0e4d6c;
   padding: 7;
+  text-align: center;
 }
 
 table.menu td a:link{
