@@ -1,56 +1,67 @@
-#slideshow{
-    background-color:#F5F5F5;
-    border:1px solid #FFFFFF;
-    height:340px;
-    margin:150px auto 0;
-    position:relative;
-    width:640px;
+*{
+	margin:0;
+	padding:0;
+}
 
-    -moz-box-shadow:0 0 22px #111;
-    -webkit-box-shadow:0 0 22px #111;
-    box-shadow:0 0 22px #111;
+body{
+	color:#eee;
+	background:url('images/slideshow/bg.jpg') repeat-x #0c0d10;
+	font:13px "Lucida Sans Unicode",Arial,Helvetica,sans-serif;
+}
+
+#slideshow{
+	background-color:#F5F5F5;
+	border:1px solid #FFFFFF;
+	height:340px;
+	margin:150px auto 0;
+	position:relative;
+	width:640px;
+	
+	-moz-box-shadow:0 0 22px #111;
+	-webkit-box-shadow:0 0 22px #111;
+	box-shadow:0 0 22px #111;
 }
 
 #slideshow ul{
-    height:320px;
-    left:10px;
-    list-style:none outside none;
-    overflow:hidden;
-    position:absolute;
-    top:10px;
-    width:620px;
+	height:320px;
+	left:10px;
+	list-style:none outside none;
+	overflow:hidden;
+	position:absolute;
+	top:10px;
+	width:620px;
 }
 
 #slideshow li{
-    position:absolute;
-    display:none;
-    z-index:10;
+	position:absolute;
+	display:none;
+	z-index:10;
 }
 
 #slideshow li:first-child{
-    display:block;
-    z-index:1000;
+	display:block;
+	z-index:1000;
 }
 
 #slideshow .slideActive{
-    z-index:1000;
+	z-index:1000;
 }
 
 #slideshow canvas{
-    display:none;
-    position:absolute;
-    z-index:100;
+	display:none;
+	position:absolute;
+	z-index:100;
 }
 
 #slideshow .arrow{
-    height:86px;
-    width:60px;
-    position:absolute;
-    background:url('img/arrows.png') no-repeat;
-    top:50%;
-    margin-top:-43px;
-    cursor:pointer;
-    z-index:5000;
+	height:86px;
+	width:60px;
+	position:absolute;
+	background:url('images/slideshow/arrows.png') no-repeat;
+	top:50%;
+	margin-top:-43px;
+	cursor:pointer;
+	z-index:5000;
 }
 
 #slideshow .previous{ background-position:left top;left:0;}
