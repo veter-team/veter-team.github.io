@@ -5,6 +5,7 @@
 <meta name="description" content="Open robotics platform with ready to use hardware and software modules.">
 <title>Ветер - робот для исследователей</title>
 <link href="styles.css" rel="stylesheet" type="text/css">
+<LINK href="slideshow.css" rel="stylesheet" type="text/css">
 <link rel="shortcut icon" href="http://veterobot.com/favicon.ico"/>
 </head>
 
@@ -86,13 +87,32 @@
 </tr>
 </table>
 
-<br/>
-
-<iframe width="560" height="315" 
-	src="http://www.youtube.com/embed/uUOn-zTqZv8?rel=0" 
-	frameborder="0" allowfullscreen>
-</iframe>
 </center>
+
+<div id="slideshow">
+<!--
+Great thanks to Martin Angelov for his tutorial we used here for slideshow:
+http://tutorialzine.com/2010/09/html5-canvas-slideshow-jquery/
+-->
+    <ul class="slides">
+        <li><img src="images/slideshow/1.jpg" width="620" height="412" alt="Photo 1" /></li>
+        <li><img src="images/slideshow/2.jpg" width="620" height="412" alt="Photo 2" /></li>
+        <li><img src="images/slideshow/3.jpg" width="620" height="412" alt="Photo 3" /></li>
+        <li><img src="images/slideshow/4.jpg" width="620" height="412" alt="Photo 4" /></li>
+        <li><img src="images/slideshow/5.jpg" width="620" height="412" alt="Photo 5" /></li>
+        <li><img src="images/slideshow/6.jpg" width="620" height="412" alt="Photo 6" /></li>
+        <li><img src="images/slideshow/7.jpg" width="620" height="412" alt="Photo 7" /></li>
+        <li><img src="images/slideshow/8.jpg" width="620" height="412" alt="Photo 8" /></li>
+        <li><img src="images/slideshow/rendered-alternative.jpg" width="620" height="412" alt="Rendered alternative 1" /></li>
+        <li><img src="images/slideshow/rendered-alternative2.jpg" width="620" height="412" alt="Rendered alternative 2" /></li>
+    </ul>
+
+    <span class="arrow previous"></span>
+    <span class="arrow next"></span>
+</div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script src="slideshow.js"></script>
 
 <br/><br/>
 

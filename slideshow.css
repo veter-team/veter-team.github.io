@@ -1,7 +1,9 @@
+/*
 *{
 	margin:0;
 	padding:0;
 }
+*/
 /*
 body{
 	color:#eee;
@@ -9,11 +11,14 @@ body{
 	font:13px "Lucida Sans Unicode",Arial,Helvetica,sans-serif;
 }
 */
-#slideshow{
+#slideshow {
+	margin:0;
+	padding:0;
+
 	background-color:#F5F5F5;
 	border:1px solid #FFFFFF;
 	height:432px;
-	margin:150px auto 0;
+	margin:20px auto 0;
 	position:relative;
 	width:640px;
 	
@@ -23,6 +28,9 @@ body{
 }
 
 #slideshow ul{
+	margin:0;
+	padding:0;
+
 	height:412px;
 	left:10px;
 	list-style:none outside none;
@@ -33,12 +41,18 @@ body{
 }
 
 #slideshow li{
+	margin:0;
+	padding:0;
+
 	position:absolute;
 	display:none;
 	z-index:10;
 }
 
 #slideshow li:first-child{
+	margin:0;
+	padding:0;
+
 	display:block;
 	z-index:1000;
 }
