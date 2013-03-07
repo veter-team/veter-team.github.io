@@ -12,7 +12,7 @@ body{
 #slideshow{
 	background-color:#F5F5F5;
 	border:1px solid #FFFFFF;
-	height:340px;
+	height:432px;
 	margin:150px auto 0;
 	position:relative;
 	width:640px;
@@ -23,7 +23,7 @@ body{
 }
 
 #slideshow ul{
-	height:320px;
+	height:412px;
 	left:10px;
 	list-style:none outside none;
 	overflow:hidden;
