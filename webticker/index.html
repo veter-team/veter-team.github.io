@@ -13,63 +13,31 @@
 
 	$(function() {
 
-	    var totalPoints = 500;
-/*
-	    var date = new Date();
-	    var initdata0 = function(){ var d = []; for(i = 0; i < totalPoints; i++) {date.setHours(i/60);date.setMinutes(i%60); d.push([date.getTime(), 0.0]);} return d; }();
-	    var initdata1 = function(){ var d = []; for(i = 0; i < totalPoints; i++) {date.setHours(i/60);date.setMinutes(i%60); d.push([date.getTime(), 0.0]);} return d; }();
-*/
-	    var start_date = new Date();
-	    start_date.setMinutes(0);
-	    var date2 = new Date(start_date.getTime());
-	    date2.setHours(start_date.getHours()+1);
-	    var milistep = (date2.getTime() - start_date.getTime()) / totalPoints;
+	    var totalPoints = 60*2;
 
-	    var timestamps = function(){ 
-		var d = []; 
-		for(i = 0; i < totalPoints; i++) {
-		    var tick = new Date(start_date.getTime() + i * milistep);
-		    d.push(tick); 
-		}
-		return d; 
-	    }();
-
-            function euroFormatter(v, axis) {
-                return v.toFixed(axis.tickDecimals) + "€";
-            }
-
-            function datetimeFormatter(v, axis) {
-		var tick = new Date(start_date.getTime() + v.toFixed() * milistep);
-                return tick.toLocaleTimeString();
-            }
-
-	    
             var plot = $.plot("#placeholder", [
-                { data: function(){var d = []; for(i = 0; i < totalPoints; i++) d.push([i, 0.0]); return d;}(), 
+                { data: [],//function(){var d = []; for(i = 0; i < totalPoints; i++) d.push([i, 0.0]); return d;}(), 
 		  label: "BTC/USD" 
 		},
-                { data: function(){var d = []; for(i = 0; i < totalPoints; i++) d.push([i, 0.0]); return d;}(), 
+                { data: [],//function(){var d = []; for(i = 0; i < totalPoints; i++) d.push([i, 0.0]); return d;}(), 
 		  label: "Change rate", 
 		  yaxis: 2
 		}
             ], {
                 xaxes: [ 
-		    { min: 0,
-		      show: false,
-		      max: totalPoints,
-                      tickFormatter: datetimeFormatter
+		    { mode: "time",
+		      show: true
 		    } 
 		],
                 yaxes: [
-		    { min: 0, max: 120 },
-		    { min: -0.01, max: 0.01,
+		    { },
+		    {
                     // align if we are to the right
                     alignTicksWithAxis: 1,//position == "right" ? 1 : null,
                     position: "right",
-                    //tickFormatter: euroFormatter
                     } 
 		],
-                legend: { position: "sw" },
+                legend: { position: "nw" },
 		series: {
 		    shadowSize: 0 // Drawing is faster without shadows
 		}
@@ -80,16 +48,16 @@
 
 	    var conn = io.connect('https://socketio.mtgox.com/mtgox');
 	    conn.on('connect', function(msg) {
-		//console.debug('Connected.');
+		console.debug('Connected.');
 	    });
 
 	    conn.on('disconnect', function(msg) {
-		//console.debug('Disconnected.');
+		console.debug('Disconnected.');
 		conn = io.connect('https://socketio.mtgox.com/mtgox');
 	    });
 
 	    conn.on('error', function(msg) {
-		//console.debug('Error. ' + msg);
+		console.debug('Error. ' + msg);
 		conn = io.connect('https://socketio.mtgox.com/mtgox');
 	    });
 
@@ -103,31 +71,22 @@
 		    {
 			graph_data0 = graph_data0.slice(1);
 			graph_data1 = graph_data1.slice(1);
-			timestamps = timestamps.slice(1);
 		    }
 		    //console.debug(Math.round(msg.ticker.now/1000), msg.ticker.avg.value);
 
-		    timestamps.push(Math.round(msg.ticker.now/1000)); // Precission of reported timestamp is too high
-		   
-		    //graph_data0.push([Math.round(msg.ticker.now/1000), msg.ticker.avg.value])
-		    //graph_data1.push([Math.round(msg.ticker.now/1000), msg.ticker.avg.value/100.0])
-		    
-		    graph_data0.push([graph_data0.length-1, msg.ticker.avg.value])
-		    var delta = 0.0;
-		    if(graph_data0.length > 1 && graph_data0[graph_data0.length-2][1] != 0.0)
-		    {
-			//console.debug('--> ', graph_data0[graph_data0.length-1][1], graph_data0[graph_data0.length-1][1] - graph_data0[graph_data0.length-2][1]);
-			graph_data1.push([graph_data0.length-1, 60+(graph_data0[graph_data0.length-1][1] - graph_data0[graph_data0.length-2][1])*6000.0])
-		    }
+		    graph_data0.push([Math.round(msg.ticker.now/1000), msg.ticker.avg.value]);
+		    if(graph_data0.length > 1)
+			graph_data1.push([Math.round(msg.ticker.now/1000), 
+					  graph_data0[graph_data0.length-1][1] - graph_data0[graph_data0.length-2][1]]);
 		    else
-			graph_data1.push([graph_data0.length-1, 60]);
-		    for(i = 0; i < graph_data0.length-1; i++)
-		    {
-			graph_data0[i][0] = i;
-			graph_data1[i][0] = i;
-		    }
-		    
-		    plot.setData([graph_data0, graph_data1]);
+			graph_data1.push([Math.round(msg.ticker.now/1000), 0.0]);
+
+		    //console.debug(graph_data0); console.debug(graph_data1);
+		    plot.setData([{ data: graph_data0, label: "BTC/USD" }, 
+				  { data: graph_data1, label: "Change rate", yaxis: 2}
+				 ]);
+
+		    plot.setupGrid();
 		    plot.draw();
 		}
 	    });
