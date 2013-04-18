@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Flot Examples: Real-time updates</title>
+	<link href="examples.css" rel="stylesheet" type="text/css">
+	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../excanvas.min.js"></script><![endif]-->
+	<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+	<script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
+	<script language="javascript" type="text/javascript" src="js/jquery.flot.time.js"></script>
+	<script language="javascript" type="text/javascript" src="js/socket.io.js"></script>
+	<script type="text/javascript">
+
+	$(function() {
+
+	    var totalPoints = 500;
+/*
+	    var date = new Date();
+	    var initdata0 = function(){ var d = []; for(i = 0; i < totalPoints; i++) {date.setHours(i/60);date.setMinutes(i%60); d.push([date.getTime(), 0.0]);} return d; }();
+	    var initdata1 = function(){ var d = []; for(i = 0; i < totalPoints; i++) {date.setHours(i/60);date.setMinutes(i%60); d.push([date.getTime(), 0.0]);} return d; }();
+*/
+	    var start_date = new Date();
+	    start_date.setMinutes(0);
+	    var date2 = new Date(start_date.getTime());
+	    date2.setHours(start_date.getHours()+1);
+	    var milistep = (date2.getTime() - start_date.getTime()) / totalPoints;
+
+	    var timestamps = function(){ 
+		var d = []; 
+		for(i = 0; i < totalPoints; i++) {
+		    var tick = new Date(start_date.getTime() + i * milistep);
+		    d.push(tick); 
+		}
+		return d; 
+	    }();
+
+            function euroFormatter(v, axis) {
+                return v.toFixed(axis.tickDecimals) + "€";
+            }
+
+            function datetimeFormatter(v, axis) {
+		var tick = new Date(start_date.getTime() + v.toFixed() * milistep);
+                return tick.toLocaleTimeString();
+            }
+
+	    
+            var plot = $.plot("#placeholder", [
+                { data: function(){var d = []; for(i = 0; i < totalPoints; i++) d.push([i, 0.0]); return d;}(), 
+		  label: "BTC/USD" 
+		},
+                { data: function(){var d = []; for(i = 0; i < totalPoints; i++) d.push([i, 0.0]); return d;}(), 
+		  label: "Change rate", 
+		  yaxis: 2
+		}
+            ], {
+                xaxes: [ 
+		    { min: 0,
+		      show: false,
+		      max: totalPoints,
+                      tickFormatter: datetimeFormatter
+		    } 
+		],
+                yaxes: [
+		    { min: 0, max: 100 },
+		    { min: -0.01, max: 0.01,
+                    // align if we are to the right
+                    alignTicksWithAxis: 1,//position == "right" ? 1 : null,
+                    position: "right",
+                    //tickFormatter: euroFormatter
+                    } 
+		],
+                legend: { position: "sw" },
+		series: {
+		    shadowSize: 0 // Drawing is faster without shadows
+		}
+            });
+
+	    // Add the Flot version string to the footer
+	    $("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+
+	    var conn = io.connect('https://socketio.mtgox.com/mtgox');
+	    conn.on('connect', function(msg) {
+		//console.debug('Connected.');
+	    });
+
+	    conn.on('disconnect', function(msg) {
+		//console.debug('Disconnected.');
+		conn = io.connect('https://socketio.mtgox.com/mtgox');
+	    });
+
+	    conn.on('error', function(msg) {
+		//console.debug('Error. ' + msg);
+		conn = io.connect('https://socketio.mtgox.com/mtgox');
+	    });
+
+	    conn.on('message', function(msg) {
+		if(msg.op == 'private' && msg.private == 'ticker')
+		{
+		    var graph_data0 = plot.getData()[0].data
+		    var graph_data1 = plot.getData()[1].data
+
+		    if(graph_data0.length == totalPoints)
+		    {
+			graph_data0 = graph_data0.slice(1);
+			graph_data1 = graph_data1.slice(1);
+			timestamps = timestamps.slice(1);
+		    }
+		    //console.debug(Math.round(msg.ticker.now/1000), msg.ticker.avg.value);
+
+		    timestamps.push(Math.round(msg.ticker.now/1000)); // Precission of reported timestamp is too high
+		   
+		    //graph_data0.push([Math.round(msg.ticker.now/1000), msg.ticker.avg.value])
+		    //graph_data1.push([Math.round(msg.ticker.now/1000), msg.ticker.avg.value/100.0])
+		    
+		    graph_data0.push([graph_data0.length-1, msg.ticker.avg.value])
+		    var delta = 0.0;
+		    if(graph_data0.length > 1 && graph_data0[graph_data0.length-2][1] != 0.0)
+		    {
+			//console.debug('--> ', graph_data0[graph_data0.length-1][1], graph_data0[graph_data0.length-1][1] - graph_data0[graph_data0.length-2][1]);
+			graph_data1.push([graph_data0.length-1, 50+(graph_data0[graph_data0.length-1][1] - graph_data0[graph_data0.length-2][1])*5000.0])
+		    }
+		    else
+			graph_data1.push([graph_data0.length-1, 50]);
+		    for(i = 0; i < graph_data0.length-1; i++)
+		    {
+			graph_data0[i][0] = i;
+			graph_data1[i][0] = i;
+		    }
+		    
+		    plot.setData([graph_data0, graph_data1]);
+		    plot.draw();
+		}
+	    });
+
+	});
+
+	</script>
+</head>
+<body>
+
+    <div id="header">
+      <h2>Real-time updates</h2>
+    </div>
+
+    <div id="content">
+
+      <div class="demo-container">
+	<div id="placeholder" class="demo-placeholder"></div>
+      </div>
+    </div>
+</body>
+</html>
