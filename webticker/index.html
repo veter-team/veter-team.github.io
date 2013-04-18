@@ -1,28 +1,34 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>Flot Examples: Real-time updates</title>
-	<link href="examples.css" rel="stylesheet" type="text/css">
-	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../excanvas.min.js"></script><![endif]-->
-	<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
-	<script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
-	<script language="javascript" type="text/javascript" src="js/jquery.flot.time.js"></script>
-	<script language="javascript" type="text/javascript" src="js/socket.io.js"></script>
-	<script type="text/javascript">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Real-time updates: BTC/USD</title>
+  <link href="examples.css" rel="stylesheet" type="text/css">
+  <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../excanvas.min.js"></script><![endif]-->
+  <script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+  <script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
+  <script language="javascript" type="text/javascript" src="js/jquery.flot.time.js"></script>
+  <script language="javascript" type="text/javascript" src="js/socket.io.js"></script>
+  <script type="text/javascript">
 
 	$(function() {
 
-	    var totalPoints = 60*2;
+	    var totalPoints = 60*30;
 
             var plot = $.plot("#placeholder", [
-                { data: [],//function(){var d = []; for(i = 0; i < totalPoints; i++) d.push([i, 0.0]); return d;}(), 
-		  label: "BTC/USD" 
+                { data: [],
+		  label: "Average" 
 		},
-                { data: [],//function(){var d = []; for(i = 0; i < totalPoints; i++) d.push([i, 0.0]); return d;}(), 
-		  label: "Change rate", 
+                { data: [],
+		  label: "Buy" 
+		},
+                { data: [],
+		  label: "Sell" 
+		}/*,
+                { data: [],
+		  label: "Volume", 
 		  yaxis: 2
-		}
+		}*/
             ], {
                 xaxes: [ 
 		    { mode: "time",
@@ -62,28 +68,59 @@
 	    });
 
 	    conn.on('message', function(msg) {
-		if(msg.op == 'private' && msg.private == 'ticker')
+		//console.debug(msg);
+		/*if(msg.op == 'private' && msg.private == 'depth')
 		{
-		    var graph_data0 = plot.getData()[0].data
-		    var graph_data1 = plot.getData()[1].data
+		    var avg_data = plot.getData()[0].data;
+		    var buy_data = plot.getData()[1].data;
+		    var sell_data = plot.getData()[2].data;
+		    var vol_data = plot.getData()[3].data;
 
-		    if(graph_data0.length == totalPoints)
+		    if(vol_data.length == totalPoints)
 		    {
-			graph_data0 = graph_data0.slice(1);
-			graph_data1 = graph_data1.slice(1);
+			vol_data = vol_data.slice(1);
 		    }
-		    //console.debug(Math.round(msg.ticker.now/1000), msg.ticker.avg.value);
+		    var now = Math.round(msg.depth.now/1000);
+		    //vol_data.push([now, msg.depth.total_volume_int]);
+		    //$("#vol").text(msg.depth.total_volume_int);
+		    vol_data.push([now, msg.depth.volume]);
+		    $("#vol").text(msg.depth.volume);
 
-		    graph_data0.push([Math.round(msg.ticker.now/1000), msg.ticker.avg.value]);
-		    if(graph_data0.length > 1)
-			graph_data1.push([Math.round(msg.ticker.now/1000), 
-					  graph_data0[graph_data0.length-1][1] - graph_data0[graph_data0.length-2][1]]);
-		    else
-			graph_data1.push([Math.round(msg.ticker.now/1000), 0.0]);
 
-		    //console.debug(graph_data0); console.debug(graph_data1);
-		    plot.setData([{ data: graph_data0, label: "BTC/USD" }, 
-				  { data: graph_data1, label: "Change rate", yaxis: 2}
+		    plot.setData([{ data: avg_data, label: "Average" },
+				  { data: buy_data, label: "Buy" },
+				  { data: sell_data, label: "Sell"},
+				  { data: vol_data, label: "Total volume", yaxis: 2}
+				 ]);
+		    //plot.setupGrid();
+		    //plot.draw();
+		}
+		else*/ if(msg.op == 'private' && msg.private == 'ticker')
+		{
+		    //console.debug(plot.getData()[0].data)
+		    var avg_data = plot.getData()[0].data;
+		    var buy_data = plot.getData()[1].data;
+		    var sell_data = plot.getData()[2].data;
+		    //var vol_data = plot.getData()[3].data;
+
+		    if(avg_data.length == totalPoints)
+		    {
+			avg_data = avg_data.slice(1);
+			buy_data = buy_data.slice(1);
+			sell_data = sell_data.slice(1);
+		    }
+		    var now = Math.round(msg.ticker.now/1000);
+		    avg_data.push([now, msg.ticker.avg.value]);
+		    buy_data.push([now, msg.ticker.buy.value]);
+		    sell_data.push([now, msg.ticker.sell.value]);
+		    $("#avg").text(msg.ticker.avg.value);
+		    $("#buy").text(msg.ticker.buy.value);
+		    $("#sel").text(msg.ticker.sell.value);
+
+		    plot.setData([{ data: avg_data, label: "Average" },
+				  { data: buy_data, label: "Buy" },
+				  { data: sell_data, label: "Sell"},
+				  //{ data: vol_data, label: "Total volume", yaxis: 2}
 				 ]);
 
 		    plot.setupGrid();
@@ -97,15 +134,25 @@
 </head>
 <body>
 
-    <div id="header">
-      <h2>Real-time updates</h2>
-    </div>
+  <div id="header">
+    <h2>Real-time updates: BTC/USD</h2>
+  </div>
 
-    <div id="content">
+  <center> <font size="1">
+    <table>
+    <tr>
+    <td>Average:</td><td></td><td><b><div id="avg">0.0</div></b></td>
+    <td>Buy:</td><td></td><td><b><div id="buy">0.0</div></b></td>
+    <td>Sell:</td><td></td><td><b><div id="sel">0.0</div></b></td>
+    <td>Volume:</td><td></td><td><b><div id="vol">0.0</div></b></td>
+    </tr>
+    </table>
+  </font> </center>
+  <div id="content">
 
-      <div class="demo-container">
-	<div id="placeholder" class="demo-placeholder"></div>
-      </div>
+    <div class="demo-container">
+      <div id="placeholder" class="demo-placeholder"></div>
     </div>
+  </div>
 </body>
 </html>
