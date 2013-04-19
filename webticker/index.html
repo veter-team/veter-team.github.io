@@ -1,21 +1,88 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Real-time updates: BTC/USD</title>
-  <link href="examples.css" rel="stylesheet" type="text/css">
-  <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../excanvas.min.js"></script><![endif]-->
-  <script language="javascript" type="text/javascript" src="js/jquery.js"></script>
-  <script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
-  <script language="javascript" type="text/javascript" src="js/jquery.flot.time.js"></script>
-  <script language="javascript" type="text/javascript" src="js/socket.io.js"></script>
-  <script type="text/javascript">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-	$(function() {
+    <title>Real-time updates: BTC/USD</title>
 
-	    var totalPoints = 60*30;
+    <link href="examples.css" rel="stylesheet" type="text/css">
 
-            var plot = $.plot("#placeholder", [
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../excanvas.min.js"></script><![endif]-->
+
+    <script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+    <script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
+    <script language="javascript" type="text/javascript" src="js/jquery.flot.time.js"></script>
+    <script language="javascript" type="text/javascript" src="js/socket.io.js"></script>
+
+    <script type="text/javascript">
+
+var rulelist = []
+
+
+function printrulemessage(msg)
+{
+    document.getElementById("messagearea").textContent += (" " + msg);
+}
+
+
+function removerule(source)
+{
+    console.debug('remove rule ' + source.parentrowid);
+
+    document.getElementById("rulelist").removeChild(document.getElementById(source.parentrowid));
+    rulelist.splice(source.listidx, 1);
+}
+
+
+function addrule()
+{
+    var rule = {
+	'condition': new Function("avg", "buy", "sell", "return "+document.getElementById("condition").value+";"),
+	'actionattr': document.getElementById("condattr").value,
+	'action': function(param) { 
+	    if(document.getElementById("action").value == "message")
+		printrulemessage(param);
+	}
+    };
+    rulelist.push(rule);
+
+    var ruleline = document.createElement('tr');
+    ruleline.id = "rule" + (rulelist.length - 1);
+    var ruletext = document.createElement('td');
+    ruletext.textContent = "If " + document.getElementById("condition").value + ", then " + document.getElementById("action").value + " " + rule.actionattr;
+    ruleline.appendChild(ruletext);
+
+    var btncell = document.createElement('td');
+    var removebtn = document.createElement('input');
+    removebtn.type = 'image';
+    removebtn.src = 'list-remove.png';
+    removebtn.id = 'remove' + (rulelist.length - 1);
+    removebtn.listidx = (rulelist.length - 1);
+    removebtn.parentrowid = ruleline.id;
+    removebtn.onclick=function(){removerule(this);}
+    btncell.appendChild(removebtn);
+    ruleline.appendChild(btncell);
+
+    document.getElementById("rulelist").appendChild(ruleline);
+}
+
+
+function checkrules(avg, buy, sell)
+{
+    document.getElementById("messagearea").textContent="";
+
+    for(r in rulelist)
+    {
+	if(rulelist[r].condition(avg, buy, sell) == true)
+	    rulelist[r].action(rulelist[r].actionattr);
+    }
+}
+
+
+    $(function() {
+
+    var totalPoints = 60*30;
+
+    var plot = $.plot("#placeholder", [
                 { data: [],
 		  label: "Average" 
 		},
@@ -48,9 +115,6 @@
 		    shadowSize: 0 // Drawing is faster without shadows
 		}
             });
-
-	    // Add the Flot version string to the footer
-	    $("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
 
 	    var conn = io.connect('https://socketio.mtgox.com/mtgox');
 	    conn.on('connect', function(msg) {
@@ -109,6 +173,7 @@
 			buy_data = buy_data.slice(1);
 			sell_data = sell_data.slice(1);
 		    }
+		    
 		    var now = Math.round(msg.ticker.now/1000);
 		    avg_data.push([now, msg.ticker.avg.value]);
 		    buy_data.push([now, msg.ticker.buy.value]);
@@ -125,6 +190,7 @@
 
 		    plot.setupGrid();
 		    plot.draw();
+		    checkrules(msg.ticker.avg.value, msg.ticker.buy.value, msg.ticker.sell.value);
 		}
 	    });
 
@@ -138,7 +204,9 @@
     <h2>Real-time updates: BTC/USD</h2>
   </div>
 
-  <center> <font size="1">
+  <center>
+
+  <font size="1">
     <table>
     <tr>
     <td>Average:</td><td></td><td><b><div id="avg">0.0</div></b></td>
@@ -147,12 +215,33 @@
     <td>Volume:</td><td></td><td><b><div id="vol">0.0</div></b></td>
     </tr>
     </table>
-  </font> </center>
+  </font>
+
+  <font color="red">
+    <div id="messagearea"></div>
+  </font>
+
+  </center>
+
   <div id="content">
 
     <div class="demo-container">
       <div id="placeholder" class="demo-placeholder"></div>
     </div>
   </div>
+  
+  <h3>Rules builder</h3>
+
+  <p>You can use <i>avg</i>, <i>buy</i> and <i>sell</i> variables in your condition statement</p>
+
+  If <input type="text" id="condition" placeholder="sell > 100"> then 
+  <select id="action">
+    <option value="message">display the following message</option>
+    <option value="email">send email to</option>
+  </select> 
+  <input type="text" id="condattr" placeholder="sell coins">
+  <input type="image" src="list-add.png" onclick="addrule();"/>
+
+  <table id="rulelist" border="1"></table>
 </body>
 </html>
