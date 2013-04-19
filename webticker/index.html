@@ -35,6 +35,12 @@ function removerule(source)
 
 function addrule()
 {
+    if(document.getElementById("condition").value.length == 0 || document.getElementById("condattr").value.length == 0)
+    {
+	console.log("Not all fields for rule are specified");
+	return;
+    }
+
     var rule = {
 	'condition': new Function("avg", "buy", "sell", "return "+document.getElementById("condition").value+";"),
 	'actionattr': document.getElementById("condattr").value,
@@ -232,14 +238,14 @@ function checkrules(avg, buy, sell)
   
   <h3>Rules builder</h3>
 
-  <p>You can use <i>avg</i>, <i>buy</i> and <i>sell</i> variables in your condition statement</p>
+  <p>You can use <i>avg</i>, <i>buy</i> and <i>sell</i> variables to specify conditions using standard <a href="http://www.w3schools.com/js/js_comparisons.asp">JavaScript syntax</a>. For example: <i>avg > 120</i></p>
 
-  If <input type="text" id="condition" placeholder="sell > 100"> then 
+  If <input type="text" id="condition" placeholder="condition"> then 
   <select id="action">
     <option value="message">display the following message</option>
     <option value="email">send email to</option>
   </select> 
-  <input type="text" id="condattr" placeholder="Sell coins.">
+  <input type="text" id="condattr" placeholder="Text string">
   <input type="image" src="list-add.png" onclick="addrule();"/>
 
   <table id="rulelist" border="1"></table>
