@@ -2,7 +2,7 @@
 <html>
 <head>
 	
-	<title>Mobile tutorial - Leaflet</title>
+	<title>Расстояние и время до дома</title>
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,30 +45,34 @@
 
 	function onLocationFound(e) {
 		var radius = e.accuracy / 2;
+        if(isNaN(radius))
+            radius = 100;
 
         L.Routing.control({
             waypoints: [
                 e.latlng,
-                L.latLng(48.005334, 11.347380)
-                //L.latLng(49.8844128, -97.14471)
+                //L.latLng(48.005334, 11.347380)
+                L.latLng(49.8844128, -97.14471)
             ],
-            routeWhileDragging: true,
-            routesfound: function(routing_res) {
-                L.marker(e.latlng).addTo(map)
-                    .bindPopup("Ты в радиусе " + radius + " метров от этой точки.\n" + 
-                                "До дома " + routing_res.routes[0].summary.totalDistance + " км, " +
-                                 int(routing_res.routes[0].summary.totalTime/60) + " мин.").openPopup();
-            }
-        }).addTo(map);
+            routeWhileDragging: true
+        })
+        .on('routesfound', function(routing_res) {
+            console.log("Routing result: " + routing_res);
+            L.marker(e.latlng).addTo(map)
+                .bindPopup("Ты в радиусе " + radius + " метров от этой точки." + 
+                            "До дома " + routing_res.routes[0].summary.totalDistance/1000 + " км, " +
+                             Math.round(routing_res.routes[0].summary.totalTime/60) + " мин.").openPopup();
+        })
+        .addTo(map); 
 
-
-		L.circle(e.latlng, radius).addTo(map);
+        L.circle(e.latlng, radius).addTo(map);
 	}
 
 	function onLocationError(e) {
 		alert(e.message);
 	}
 
+	//map.on('click', onLocationFound);
 	map.on('locationfound', onLocationFound);
 	map.on('locationerror', onLocationError);
 
